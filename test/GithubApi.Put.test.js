@@ -5,8 +5,6 @@ const chai = require('chai');
 const urlBase = 'https://api.github.com';
 const githubUserName = 'aperdomob';
 
-chai.use(require('chai-subset'));
-
 const { expect } = chai;
 
 describe('Github PUT method consume', () => {

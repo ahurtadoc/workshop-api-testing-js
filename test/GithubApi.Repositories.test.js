@@ -1,5 +1,5 @@
 const agent = require('superagent');
-const statusCode = require('http-status-codes');
+const { StatusCodes } = require('http-status-codes');
 const chai = require('chai');
 const { createHash } = require('crypto');
 
@@ -21,7 +21,7 @@ describe('Github Api Test', () => {
       const response = await agent.get(`${urlBase}/users/${githubUserName}`)
         .set('User-Agent', 'agent');
 
-      expect(response.status).to.equal(statusCode.OK);
+      expect(response.status).to.equal(StatusCodes.OK);
       expect(response.body).to.containSubset(userInfo);
 
       describe('Find repo jasmine-awesome-report', () => {
@@ -35,7 +35,7 @@ describe('Github Api Test', () => {
           const repos = await agent.get(url)
             .set('User-Agent', 'agent');
           const findedRepo = repos.body.find((repo) => repo.name === repoInfo.name);
-          expect(repos.status).to.equal(statusCode.OK);
+          expect(repos.status).to.equal(StatusCodes.OK);
           expect(findedRepo).to.containSubset(repoInfo);
 
           describe('Download repo zip', () => {
@@ -44,7 +44,7 @@ describe('Github Api Test', () => {
               const download = await agent.get(findedRepo.downloads_url.replace('downloads', 'zipball'))
                 .set('User-Agent', 'agent');
 
-              expect(download.status).to.equal(statusCode.OK);
+              expect(download.status).to.equal(StatusCodes.OK);
               expect(createHash('md5').update(download.body).digest('hex')).equal(md5Zip);
             });
           });
@@ -59,7 +59,7 @@ describe('Github Api Test', () => {
               };
               const readMe = await agent.get(readmeUrl.replace('{+path}', readmeInfo.name))
                 .set('User-Agent', 'agent');
-              expect(readMe.status).to.equal(statusCode.OK);
+              expect(readMe.status).to.equal(StatusCodes.OK);
               expect(readMe.body).to.containSubset(readmeInfo);
 
               describe('Download README.md file', () => {
@@ -69,7 +69,7 @@ describe('Github Api Test', () => {
                   const readmeFile = await agent.get(readmeDownloadUrl)
                     .set('User-Agent', 'agent');
 
-                  expect(readmeFile.status).to.equal(statusCode.OK);
+                  expect(readmeFile.status).to.equal(StatusCodes.OK);
                   expect(createHash('md5').update(readmeFile.text).digest('hex')).equal(readmeMd5);
                 });
               });
