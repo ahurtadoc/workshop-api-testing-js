@@ -31,7 +31,7 @@ describe('Github DELETE method consume', () => {
     const gistObject = { description, public: true, files: { 'promiseSample.js': { content } } };
     const response = await agent.post(`${urlBase}/gists`)
       .auth('token', process.env.ACCESS_TOKEN)
-      .set({ 'User-Agent': 'ahurtadoc', 'Content-Type': 'application/json' })
+      .set({ 'User-Agent': 'agent' })
       .send(gistObject);
     expect(response.status).equal(StatusCodes.CREATED);
     const gistUrl = await response.body.url;
@@ -41,22 +41,25 @@ describe('Github DELETE method consume', () => {
       it('Verify git exist', async () => {
         const gist = await agent.get(response.body.url)
           .auth('token', process.env.ACCESS_TOKEN)
-          .set('User-Aget', 'ahurtadoc');
+          .set('User-Agent', 'agent');
         expect(gist.status).equal(StatusCodes.OK);
       });
 
       it('Delete gist', async () => {
         const deletedGist = await agent.delete(gistUrl)
           .auth('token', process.env.ACCESS_TOKEN)
-          .set('User-Agent', 'ahurtadoc');
+          .set('User-Agent', 'agent');
         expect(deletedGist.status).equal(StatusCodes.NO_CONTENT);
       });
 
       it('Verify gist deleted', async () => {
-        const noFindGist = await agent.get(gistUrl)
-          .auth('token', process.env.ACCESS_TOKEN)
-          .set('User-Aget', 'ahurtadoc');
-        expect(noFindGist.status).equal(StatusCodes.NOT_FOUND);
+        try {
+          await agent.get(gistUrl)
+            .auth('token', process.env.ACCESS_TOKEN)
+            .set('User-Agent', 'agent');
+        } catch (error) {
+          expect(error.status).equal(StatusCodes.NOT_FOUND);
+        }
       });
     });
   });
